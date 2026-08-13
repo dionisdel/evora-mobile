@@ -22,6 +22,11 @@ ios/
 
 # Android
 android/
+*.properties
+
+# EAS / Google Play
+google-services.json
+credentials.json
 
 # Environment
 .env
