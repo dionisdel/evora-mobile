@@ -1,25 +1,32 @@
 /**
- * Servicio de cuestionarios.
- * Obtener estructura, enviar respuestas.
+ * Servicio de cuestionarios (peticiones_fichas_visita).
+ * Obtener ficha de visita y enviar respuestas.
+ * 
+ * NOTA: En Evora, el "cuestionario" es la ficha de visita (peticiones_fichas_visita).
+ * No es un formulario dinámico de preguntas/respuestas — tiene campos fijos.
  */
 import apiClient from './api-client';
-import { Cuestionario, Respuesta } from '../types';
+import { FichaVisita } from '../types';
 
 export const cuestionarioService = {
   /**
-   * Obtener cuestionario de una farmacia (estructura + respuestas previas).
+   * Obtener ficha de visita de una petición.
    */
-  async getCuestionario(farmaciaId: number): Promise<Cuestionario> {
-    const response = await apiClient.get<{ data: Cuestionario }>(
-      `/farmacias/${farmaciaId}/cuestionario`
+  async getFicha(peticionId: number): Promise<FichaVisita | null> {
+    const response = await apiClient.get<{ data: FichaVisita | null }>(
+      '/farmacias/cuestionario-get',
+      { params: { peticion_id: peticionId } }
     );
     return response.data.data;
   },
 
   /**
-   * Enviar respuestas del cuestionario y finalizar.
+   * Enviar/guardar datos de la ficha de visita.
    */
-  async enviarRespuestas(farmaciaId: number, respuestas: Respuesta[]): Promise<void> {
-    await apiClient.post(`/farmacias/${farmaciaId}/cuestionario`, { respuestas });
+  async guardarFicha(peticionId: number, datos: Partial<FichaVisita>): Promise<void> {
+    await apiClient.post('/farmacias/cuestionario-post', {
+      peticion_id: peticionId,
+      ...datos,
+    });
   },
 };

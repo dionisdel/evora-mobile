@@ -16,7 +16,8 @@ export interface LoginResponse {
   user: {
     id: number;
     nombre: string;
-    perfil: string;
+    perfil: string; // 'coach' | 'colaborador'
+    merchan: string;
   };
 }
 
@@ -26,15 +27,31 @@ export const authService = {
    * Valida que el perfil sea "instalador".
    */
   async login(credentials: LoginRequest): Promise<LoginResponse> {
-    const response = await apiClient.post<LoginResponse>('/auth/login', credentials);
-    const data = response.data;
+    try {
+      const response = await apiClient.post<LoginResponse>('/auth/login', credentials);
+      const data = response.data;
 
-    if (data.user.perfil !== 'instalador') {
-      throw new Error('PERFIL_NO_AUTORIZADO');
+      if (data.user.perfil !== 'coach' && data.user.perfil !== 'colaborador') {
+        throw new Error('PERFIL_NO_AUTORIZADO');
+      }
+
+      await saveToken(data.token);
+      return data;
+    } catch (err: unknown) {
+      // Distinguir errores HTTP del backend
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosErr = err as { response?: { status: number; data?: { error?: { message?: string } } } };
+        if (axiosErr.response?.status === 403) {
+          const msg = axiosErr.response.data?.error?.message || '';
+          if (msg.includes('deshabilitada')) throw new Error('CUENTA_BLOQUEADA');
+          throw new Error('PERFIL_NO_AUTORIZADO');
+        }
+        if (axiosErr.response?.status === 429) {
+          throw new Error('DEMASIADOS_INTENTOS');
+        }
+      }
+      throw err;
     }
-
-    await saveToken(data.token);
-    return data;
   },
 
   /**

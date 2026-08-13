@@ -1,33 +1,38 @@
 /**
  * Servicio de visitas.
- * Registrar apertura y cierre de visitas.
+ * En Evora, las visitas se gestionan con peticiones_calendario + peticiones_fichas_visita.
+ * "Abrir visita" = crear/iniciar la ficha de visita.
+ * "Cerrar visita" = cerrar actividad (api/peticiones-cerrar-actividad.php).
  */
 import apiClient from './api-client';
-import { Visita } from '../types';
 
 export interface AbrirVisitaRequest {
-  farmacia_id: number;
-  latitud?: number;
-  longitud?: number;
+  peticion_id: number;
 }
 
-export interface CerrarVisitaRequest {
-  visita_id: number;
+export interface CerrarVisitaResponse {
+  peticion_id: number;
+  fecha_visita_realizada: string;
 }
 
 export const visitaService = {
   /**
-   * Registrar apertura de visita con fecha/hora y GPS opcional.
+   * Registrar inicio de visita (crear ficha si no existe).
    */
-  async abrir(data: AbrirVisitaRequest): Promise<Visita> {
-    const response = await apiClient.post<{ data: Visita }>('/visitas/abrir', data);
+  async abrir(data: AbrirVisitaRequest): Promise<{ ficha_id: number }> {
+    const response = await apiClient.post<{ data: { ficha_id: number } }>(
+      '/visitas/abrir', data
+    );
     return response.data.data;
   },
 
   /**
-   * Registrar cierre de visita con fecha/hora de finalización.
+   * Registrar cierre de visita (cerrar actividad).
    */
-  async cerrar(data: CerrarVisitaRequest): Promise<void> {
-    await apiClient.post('/visitas/cerrar', data);
+  async cerrar(peticionId: number): Promise<CerrarVisitaResponse> {
+    const response = await apiClient.post<{ data: CerrarVisitaResponse }>(
+      '/visitas/cerrar', { peticion_id: peticionId }
+    );
+    return response.data.data;
   },
 };

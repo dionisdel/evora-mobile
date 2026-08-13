@@ -1,6 +1,9 @@
 /**
  * Tipos compartidos de la aplicación Evora Mobile.
- * Reflejan los modelos de datos de la API Evora.
+ * Reflejan los modelos de datos de la API v2 mobile de Evora.
+ * 
+ * NOTA: En Evora, los "instaladores" son usuarios con rol 'coach' o 'colaborador'.
+ * No existe un rol 'instalador' en la BD.
  */
 
 // === Autenticación ===
@@ -8,10 +11,11 @@
 export interface User {
   id: number;
   nombre: string;
-  perfil: 'instalador';
+  perfil: 'coach' | 'colaborador';
+  merchan: string;
 }
 
-// === Farmacias ===
+// === Farmacias (peticiones_visibilidad) ===
 
 export interface Farmacia {
   id: number;
@@ -23,78 +27,96 @@ export interface Farmacia {
   codigo_postal: string;
   telefono?: string;
   estado_cuestionario: EstadoCuestionario;
-  distancia_km?: number;
   tiene_post_it: boolean;
+  distancia_km: number | null; // Siempre null (no hay coords en BD)
 }
 
 export interface FarmaciaDetalle extends Farmacia {
-  post_it?: string | null;
   correo?: string;
   persona_contacto?: string;
+  tipo_solicitud?: string;
+  opcion?: string;
+  status?: string;
+  post_it: PostIt | null;
+  ficha_id: number | null;
+  calendario: Calendario | null;
 }
 
-// === Cuestionarios ===
+// === Post-It (campos de peticiones_visibilidad) ===
+
+export interface PostIt {
+  observaciones?: string;
+  a_la_atencion_de?: string;
+  marca?: string;
+  campana?: string;
+  opciones_acordar?: string;
+  direccion_envio?: string;
+  muestras?: string;
+  otros?: string;
+}
+
+// === Cuestionario / Ficha de Visita (peticiones_fichas_visita) ===
 
 export type EstadoCuestionario = 'pendiente' | 'en_curso' | 'completado';
 
-export interface Cuestionario {
+/**
+ * La ficha de visita en Evora tiene campos fijos (no es un formulario dinámico).
+ * Los campos dependen del tipo de campaña/solicitud.
+ */
+export interface FichaVisita {
   id: number;
-  farmacia_id: number;
-  estado: EstadoCuestionario;
-  preguntas: Pregunta[];
-  respuestas?: Respuesta[];
+  peticion_id: number;
+  external_id: string;
+  fecha_visita?: string;
+  hora_visita?: string;
+  instalacion_exitosa?: 'si' | 'no';
+  tipo_instalacion?: string;
+  motivo_no_instalacion?: string;
+  trabajo_realizado?: string;
+  materiales_instalados?: string;
+  observaciones?: string;
+  incidencias?: string;
+  validado: boolean;
+  // ... más campos según campaña (vinilos, baldas, kits, etc.)
 }
 
-export interface Pregunta {
-  id: number;
-  texto: string;
-  tipo: 'texto' | 'numero' | 'seleccion' | 'boolean' | 'foto';
-  obligatoria: boolean;
-  opciones?: string[];
-  orden: number;
+// === Calendario (peticiones_calendario) ===
+
+export interface Calendario {
+  fecha_agendada: string | null;
+  hora_visita: string | null;
+  fecha_realizada: string | null;
+  tipo_visita: 'Normal' | 'Plus';
 }
 
-export interface Respuesta {
-  pregunta_id: number;
-  valor: string | number | boolean;
-}
-
-// === Visitas ===
-
-export interface Visita {
-  id: number;
-  farmacia_id: number;
-  instalador_id: number;
-  fecha_apertura: string; // ISO 8601
-  fecha_cierre?: string;
-  latitud?: number;
-  longitud?: number;
-}
-
-// === Galería ===
+// === Galería / Adjuntos (peticiones_adjuntos) ===
 
 export interface Foto {
   id: number;
-  farmacia_id: number;
-  visita_id?: number;
+  peticion_id: number;
+  tipo?: string;
+  nombre?: string;
+  mime_type?: string;
+  foto_ficha: boolean;
   url_thumbnail: string;
   url_full: string;
   fecha: string;
 }
 
-// === Documentos ===
+// === Documentos (actividades + documentacion) ===
 
 export interface Documento {
   id: number;
   nombre: string;
-  tipo: string;
-  size_bytes: number;
+  tipo: string; // 'pdf', 'doc', 'imagen', 'video'
+  formato?: string;
   url_download: string;
+  fecha: string;
 }
 
 // === Offline Queue ===
 
-export type SyncItemType = 'cuestionario' | 'visita_abrir' | 'visita_cerrar' | 'foto';
+export type SyncItemType = 'ficha_visita' | 'foto' | 'cerrar_actividad';
 export type SyncItemStatus = 'pending' | 'syncing' | 'error';
 
 export interface SyncItem {

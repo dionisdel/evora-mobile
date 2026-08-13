@@ -22,13 +22,15 @@ export function useAuth() {
     setIsLoading(true);
     try {
       const response = await authService.login(credentials);
-      setAuth(response.user as { id: number; nombre: string; perfil: 'instalador' }, response.token);
+      setAuth(response.user as { id: number; nombre: string; perfil: 'coach' | 'colaborador'; merchan: string }, response.token);
       resetAttempts();
       return true;
     } catch (err: unknown) {
       incrementAttempts();
       if (err instanceof Error && err.message === 'PERFIL_NO_AUTORIZADO') {
-        setError('Acceso restringido a instaladores.');
+        setError('Acceso restringido a instaladores (coach/colaborador).');
+      } else if (err instanceof Error && err.message === 'CUENTA_BLOQUEADA') {
+        setError('Tu cuenta está deshabilitada. Contacta al administrador.');
       } else {
         setError('Credenciales incorrectas. Inténtalo de nuevo.');
       }

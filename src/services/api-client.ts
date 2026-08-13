@@ -3,15 +3,21 @@
  * Incluye interceptors para autenticación, reintentos y manejo de errores.
  */
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { getToken, removeToken } from '@utils/secure-storage';
+import { getToken, clearAll } from '@utils/secure-storage';
 
 const API_BASE_URL = __DEV__
-  ? 'http://evora.test/api/v2/mobile'
+  ? 'http://localhost:8003/api/v2/mobile'
   : 'https://e-plataforma.com/api/v2/mobile';
 
 const TIMEOUT_MS = 15000; // 15 segundos
 const MAX_RETRIES = 2;
 const RETRY_DELAY_MS = 2000;
+
+// Callback para logout forzado (registrado por el store al iniciar)
+let onUnauthorized: (() => void) | null = null;
+export function setOnUnauthorized(cb: () => void) {
+  onUnauthorized = cb;
+}
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -40,10 +46,10 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const config = error.config as InternalAxiosRequestConfig & { _retryCount?: number };
 
-    // 401: Sesión expirada → limpiar token
+    // 401: Sesión expirada → limpiar todo y forzar logout
     if (error.response?.status === 401) {
-      await removeToken();
-      // El store de auth detectará la ausencia de token y redirigirá al login
+      await clearAll();
+      if (onUnauthorized) onUnauthorized();
       return Promise.reject(error);
     }
 

@@ -1,8 +1,10 @@
 /**
  * Pantalla Principal - Búsqueda de Farmacias.
- * Incluye barra de búsqueda y listado de farmacias cercanas.
+ * Barra de búsqueda + listado de resultados.
+ * 
+ * NOTA: No hay geolocalización por proximidad (BD sin coordenadas).
+ * La búsqueda es exclusivamente por filtros de texto.
  */
-import { useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,36 +12,20 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
-import { useLocation } from '../../src/hooks/useLocation';
 import { useFarmacias } from '../../src/hooks/useFarmacias';
 import SearchBar from '../../src/components/SearchBar';
 import FarmaciaCard from '../../src/components/FarmaciaCard';
 
 export default function BuscarScreen() {
-  const { latitude, longitude, hasPermission, isLoading: geoLoading } = useLocation();
-  const { farmacias, isLoading, error, buscar, buscarCercanas } = useFarmacias();
-
-  // Cargar farmacias cercanas cuando tenemos ubicación
-  useEffect(() => {
-    if (latitude && longitude) {
-      buscarCercanas(latitude, longitude);
-    }
-  }, [latitude, longitude, buscarCercanas]);
+  const { farmacias, isLoading, error, buscar } = useFarmacias();
 
   return (
     <View style={styles.container}>
-      {/* Badge de geolocalización */}
-      {hasPermission && latitude && (
-        <View style={styles.geoBadge}>
-          <Text style={styles.geoBadgeText}>📍 Cerca de tu ubicación</Text>
-        </View>
-      )}
-
       {/* Barra de búsqueda */}
       <SearchBar onSearch={buscar} />
 
       {/* Estado de carga */}
-      {(isLoading || geoLoading) && (
+      {isLoading && (
         <ActivityIndicator style={styles.loader} size="large" color="#3182ce" />
       )}
 
@@ -53,9 +39,9 @@ export default function BuscarScreen() {
         renderItem={({ item }) => <FarmaciaCard farmacia={item} />}
         contentContainerStyle={styles.list}
         ListEmptyComponent={
-          !isLoading && !geoLoading ? (
+          !isLoading ? (
             <Text style={styles.empty}>
-              {latitude ? 'No hay farmacias cercanas' : 'Busca una farmacia por nombre, dirección o población'}
+              Busca una farmacia por nombre, dirección, población o provincia
             </Text>
           ) : null
         }
@@ -68,15 +54,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f7fafc',
-  },
-  geoBadge: {
-    backgroundColor: '#ebf8ff',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-  },
-  geoBadgeText: {
-    color: '#2b6cb0',
-    fontSize: 13,
   },
   loader: {
     marginTop: 32,
@@ -96,5 +73,6 @@ const styles = StyleSheet.create({
     color: '#a0aec0',
     marginTop: 48,
     fontSize: 15,
+    paddingHorizontal: 32,
   },
 });
