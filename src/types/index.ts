@@ -112,6 +112,9 @@ export interface Documento {
   formato?: string;
   url_download: string;
   fecha: string;
+  fuente: 'actividad' | 'documentacion';
+  categoria: string;
+  descripcion: string;
 }
 
 // === Offline Queue ===

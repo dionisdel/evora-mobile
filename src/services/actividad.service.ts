@@ -1,25 +1,30 @@
 /**
  * Servicio de documentos de actividad.
- * Listar y descargar documentos asociados a farmacias.
+ * Listar y descargar documentos (actividades + documentación usuario).
  */
 import apiClient from './api-client';
 import { Documento } from '../types';
 
+export interface DocumentoResponse extends Documento {
+  fuente: 'actividad' | 'documentacion';
+  categoria: string;
+  descripcion: string;
+}
+
 export const actividadService = {
   /**
-   * Listar documentos de actividad de una farmacia.
+   * Listar documentos de actividad + documentación del usuario.
    */
-  async listar(farmaciaId: number): Promise<Documento[]> {
-    const response = await apiClient.get<{ data: Documento[] }>(
-      `/farmacias/${farmaciaId}/documentos`
-    );
+  async listar(): Promise<DocumentoResponse[]> {
+    const response = await apiClient.get<{ data: DocumentoResponse[] }>('/documentos/list');
     return response.data.data;
   },
 
   /**
-   * Obtener URL de descarga de un documento.
+   * Obtener URL completa de descarga de un documento.
    */
-  getDownloadUrl(documentoId: number): string {
-    return `${apiClient.defaults.baseURL}/documentos/${documentoId}/download`;
+  getDownloadUrl(documentoId: number, fuente: string = 'actividad'): string {
+    const base = apiClient.defaults.baseURL || '';
+    return `${base}/documentos/download?fuente=${fuente}&id=${documentoId}`;
   },
 };

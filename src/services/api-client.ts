@@ -47,9 +47,16 @@ apiClient.interceptors.response.use(
     const config = error.config as InternalAxiosRequestConfig & { _retryCount?: number };
 
     // 401: Sesión expirada → limpiar todo y forzar logout
+    // EXCEPCIÓN: No aplicar en rutas de auth (login/refresh) porque un 401 ahí
+    // es un error de credenciales, no una sesión expirada.
     if (error.response?.status === 401) {
-      await clearAll();
-      if (onUnauthorized) onUnauthorized();
+      const url = config?.url || '';
+      const isAuthRoute = url.includes('/auth/login') || url.includes('/auth/refresh');
+      
+      if (!isAuthRoute) {
+        await clearAll();
+        if (onUnauthorized) onUnauthorized();
+      }
       return Promise.reject(error);
     }
 

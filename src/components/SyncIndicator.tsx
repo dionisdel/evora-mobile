@@ -1,35 +1,48 @@
 /**
  * Indicador de sincronización offline.
- * Muestra badge con elementos pendientes.
+ * Muestra badge persistente con:
+ * - Número de elementos pendientes
+ * - Estado actual (pendiente, sincronizando, error)
+ * - Botón reintentar si hay errores
  */
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSyncStore } from '@store/sync.store';
 
-export default function SyncIndicator() {
+interface SyncIndicatorProps {
+  onRetry?: () => void;
+}
+
+export default function SyncIndicator({ onRetry }: SyncIndicatorProps) {
   const { pendingCount, isSyncing, hasErrors } = useSyncStore();
 
-  if (pendingCount === 0 && !hasErrors) return null;
+  if (pendingCount === 0 && !hasErrors && !isSyncing) return null;
 
-  const getIcon = () => {
-    if (isSyncing) return 'sync';
-    if (hasErrors) return 'alert-circle';
-    return 'cloud-upload-outline';
+  const getConfig = () => {
+    if (isSyncing) return { icon: 'sync' as const, color: '#3182ce', bg: '#ebf8ff', text: 'Sincronizando...' };
+    if (hasErrors) return { icon: 'alert-circle' as const, color: '#e53e3e', bg: '#fed7d7', text: `${pendingCount} con error` };
+    return { icon: 'cloud-upload-outline' as const, color: '#dd6b20', bg: '#fefcbf', text: `${pendingCount} pendiente${pendingCount > 1 ? 's' : ''}` };
   };
 
-  const getColor = () => {
-    if (hasErrors) return '#e53e3e';
-    if (isSyncing) return '#3182ce';
-    return '#dd6b20';
-  };
+  const config = getConfig();
 
   return (
-    <View style={[styles.container, { borderColor: getColor() }]}>
-      <Ionicons name={getIcon()} size={16} color={getColor()} />
-      <Text style={[styles.text, { color: getColor() }]}>
-        {isSyncing ? 'Sincronizando...' : `${pendingCount} pendiente${pendingCount > 1 ? 's' : ''}`}
-      </Text>
-    </View>
+    <TouchableOpacity
+      style={[styles.container, { backgroundColor: config.bg, borderColor: config.color }]}
+      onPress={hasErrors ? onRetry : undefined}
+      activeOpacity={hasErrors ? 0.7 : 1}
+      disabled={!hasErrors}
+    >
+      {isSyncing ? (
+        <ActivityIndicator size={14} color={config.color} />
+      ) : (
+        <Ionicons name={config.icon} size={14} color={config.color} />
+      )}
+      <Text style={[styles.text, { color: config.color }]}>{config.text}</Text>
+      {hasErrors && (
+        <Ionicons name="refresh" size={12} color={config.color} />
+      )}
+    </TouchableOpacity>
   );
 }
 
@@ -37,17 +50,14 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 14,
     borderWidth: 1,
-    gap: 6,
-    alignSelf: 'center',
-    marginVertical: 8,
+    gap: 5,
   },
   text: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '500',
   },
 });

@@ -21,15 +21,22 @@ export interface LoginResponse {
   };
 }
 
+// La API envuelve todo en { success: true, data: {...} }
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  timestamp: string;
+}
+
 export const authService = {
   /**
    * Autenticar usuario contra la API Evora.
-   * Valida que el perfil sea "instalador".
+   * Valida que el perfil sea coach o colaborador.
    */
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
-      const response = await apiClient.post<LoginResponse>('/auth/login', credentials);
-      const data = response.data;
+      const response = await apiClient.post<ApiResponse<LoginResponse>>('/auth/login', credentials);
+      const data = response.data.data; // Desempaquetar { success, data: {...} }
 
       if (data.user.perfil !== 'coach' && data.user.perfil !== 'colaborador') {
         throw new Error('PERFIL_NO_AUTORIZADO');
@@ -58,9 +65,10 @@ export const authService = {
    * Renovar token sin re-login.
    */
   async refreshToken(): Promise<string> {
-    const response = await apiClient.post<{ token: string; expires_at: string }>('/auth/refresh');
-    await saveToken(response.data.token);
-    return response.data.token;
+    const response = await apiClient.post<ApiResponse<{ token: string; expires_at: string }>>('/auth/refresh');
+    const data = response.data.data;
+    await saveToken(data.token);
+    return data.token;
   },
 
   /**
