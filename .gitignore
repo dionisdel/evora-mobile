@@ -48,3 +48,7 @@ Thumbs.db
 
 # Testing
 coverage/
+
+# Release keystore (never commit)
+*.keystore
+!android/app/debug.keystore
