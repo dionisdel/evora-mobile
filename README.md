@@ -1,86 +1,91 @@
-# Evora Mobile - App Instaladores
+# Evora Mobile (Flutter)
 
-Aplicación móvil multiplataforma (iOS + Android) para instaladores de Evora. Desarrollada con React Native + Expo + TypeScript.
+App móvil Evora para instaladores - Búsqueda de farmacias y cuestionarios.
 
 ## Requisitos
 
-- Node.js 20 LTS o superior
-- npm o yarn
-- Expo Go instalado en dispositivo móvil (para desarrollo)
+- Flutter SDK >= 3.16.0
+- Dart SDK >= 3.2.0
+- Android Studio / Xcode para compilación nativa
 
 ## Setup
 
 ```bash
+# Generar archivos de plataforma (si es la primera vez)
+flutter create . --org com.evora --project-name evora_mobile
+
 # Instalar dependencias
-npm install
+flutter pub get
 
-# Iniciar servidor de desarrollo
-npm start
-
-# Escanear QR con Expo Go en tu móvil
+# Ejecutar en desarrollo
+flutter run
 ```
 
-## Estructura del Proyecto
+## Estructura
 
 ```
-evora-mobile/
-├── app/                    # Pantallas (Expo Router - file-based routing)
-│   ├── _layout.tsx         # Root layout (auth guard)
-│   ├── login.tsx           # Pantalla de login
-│   └── (auth)/             # Grupo de rutas autenticadas
-│       ├── _layout.tsx     # Tab navigator
-│       ├── index.tsx       # Búsqueda de farmacias (pantalla principal)
-│       ├── cuestionario/   # Cuestionario dinámico
-│       └── mas/            # Menú secundario (Actividad + Galería)
-├── src/
-│   ├── services/           # Capa de comunicación con API Evora
-│   ├── hooks/              # Custom hooks (auth, location, offline)
-│   ├── components/         # Componentes reutilizables
-│   ├── store/              # Estado global (Zustand)
-│   ├── types/              # Interfaces TypeScript
-│   └── utils/              # Utilidades (storage, queue, navigation)
-├── assets/                 # Iconos, splash screen, fuentes
-├── app.json                # Configuración Expo
-├── eas.json                # Configuración EAS Build
-└── tsconfig.json           # TypeScript config
+lib/
+├── main.dart              # Entry point
+├── router.dart            # GoRouter con auth guard
+├── core/                  # Utilidades core
+│   ├── api_client.dart    # Dio HTTP client con interceptors
+│   ├── secure_storage.dart
+│   ├── offline_queue.dart
+│   ├── offline_helpers.dart
+│   └── navigation_utils.dart
+├── models/                # Modelos de datos
+│   ├── farmacia.dart
+│   ├── ficha_visita.dart
+│   ├── foto.dart
+│   ├── documento.dart
+│   ├── user.dart
+│   └── sync_item.dart
+├── services/              # Servicios API
+│   ├── auth_service.dart
+│   ├── farmacia_service.dart
+│   ├── cuestionario_service.dart
+│   ├── galeria_service.dart
+│   ├── visita_service.dart
+│   └── actividad_service.dart
+├── providers/             # Estado (Riverpod)
+│   ├── auth_provider.dart
+│   └── sync_provider.dart
+├── screens/               # Pantallas
+│   ├── login_screen.dart
+│   ├── app_shell.dart     # Tab navigator
+│   ├── home_screen.dart   # Búsqueda farmacias
+│   ├── cuestionario_screen.dart
+│   └── mas_screen.dart
+├── widgets/               # Componentes reutilizables
+│   ├── farmacia_card.dart
+│   ├── search_bar_widget.dart
+│   ├── sync_indicator.dart
+│   ├── post_it_modal.dart
+│   └── galeria_view.dart
+└── theme/
+    └── app_theme.dart
 ```
 
-## Scripts
+## Funcionalidades
 
-| Script | Descripción |
-|--------|-------------|
-| `npm start` | Inicia Expo dev server |
-| `npm run android` | Abre en Android |
-| `npm run ios` | Abre en iOS |
-| `npm run lint` | Ejecuta ESLint |
-| `npm run typecheck` | Verifica tipos TypeScript |
+- Login con bloqueo tras 5 intentos (15 min cooldown)
+- Búsqueda de farmacias con debounce y filtros avanzados
+- Cuestionario/Ficha de visita con auto-guardado cada 30s
+- Galería de fotos con cámara/galería
+- Documentos de actividad con descarga
+- Cola offline (FIFO, máx 50 items, 3 reintentos)
+- Sincronización automática al recuperar conexión
+- Navegación a Google Maps / Apple Maps
 
-## Arquitectura
+## API
 
-La app es un **thin client** que consume exclusivamente la API REST de la plataforma web Evora:
+Conecta a:
+- Dev: `http://10.0.2.2:8003/api/v2/mobile` (emulador Android)
+- Prod: `https://e-plataforma.com/api/v2/mobile`
 
-- **Sin lógica de negocio local** — toda la lógica vive en el backend PHP
-- **Sin datos maestros persistentes** — solo caché temporal y cola offline
-- **Autenticación delegada** — JWT emitido por la plataforma web
-
-## API Backend
-
-La app consume endpoints en `/api/v2/mobile/` publicados por la plataforma web existente. Ver documentación en el repo `evora-plataforma`.
-
-## Builds
+## Build
 
 ```bash
-# Build de desarrollo (APK para testing)
-npx eas build --platform android --profile preview
-
-# Build de producción
-npx eas build --platform all --profile production
+flutter build apk --release
+flutter build appbundle --release
 ```
-
-## Entornos
-
-| Entorno | Backend |
-|---------|---------|
-| Desarrollo | `http://evora.test/api/v2/mobile` |
-| Staging | `https://evora-plataforma-dev.es.mialias.net/api/v2/mobile` |
-| Producción | `https://e-plataforma.com/api/v2/mobile` |
