@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/secure_storage.dart';
 import '../models/user.dart';
@@ -98,9 +99,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
         default:
           return 'Credenciales incorrectas. Inténtalo de nuevo.';
       }
-    } catch (_) {
+    } catch (e) {
       _incrementAttempts();
-      return 'Credenciales incorrectas. Inténtalo de nuevo.';
+      debugPrint('[AuthProvider] Login error: $e');
+      return 'Error de conexión. Verifica tu red e inténtalo de nuevo.';
     }
   }
 

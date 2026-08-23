@@ -39,7 +39,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     try {
       final results = await FarmaciaService.buscar(params);
       setState(() => _farmacias = results);
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[HomeScreen] Error buscando farmacias: $e');
       setState(() {
         _error = 'No se pudieron cargar las farmacias. Comprueba tu conexión.';
         _farmacias = [];

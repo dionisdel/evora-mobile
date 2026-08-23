@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../core/api_client.dart';
 import '../models/farmacia.dart';
 
@@ -35,10 +36,12 @@ class FarmaciaService {
   /// Buscar farmacias con filtros de texto.
   /// Solo devuelve las asignadas al usuario autenticado.
   static Future<List<Farmacia>> buscar(BusquedaParams params) async {
+    debugPrint('[FarmaciaService] Buscando con params: ${params.toQueryParams()}');
     final response = await apiClient.get(
       '/farmacias/list',
       queryParameters: params.toQueryParams(),
     );
+    debugPrint('[FarmaciaService] Response status: ${response.statusCode}, data length: ${(response.data['data'] as List?)?.length ?? 0}');
     final data = response.data['data'] as List<dynamic>;
     return data.map((e) => Farmacia.fromJson(e as Map<String, dynamic>)).toList();
   }

@@ -3,8 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'secure_storage.dart';
 
 /// URL base según entorno.
-const String _devBaseUrl = 'http://10.0.2.2:8003/api/v2/mobile';
-const String _prodBaseUrl = 'https://e-plataforma.com/api/v2/mobile';
+/// TEMPORALMENTE ambos apuntan a testing para generar APK de prueba.
+/// PRODUCCIÓN FINAL: cambiar _prodBaseUrl a https://e-plataforma.com/api/v2/mobile
+const String _devBaseUrl = 'https://dev.e-plataforma.com/api/v2/mobile';
+const String _prodBaseUrl = 'https://dev.e-plataforma.com/api/v2/mobile';
 
 String get apiBaseUrl => kDebugMode ? _devBaseUrl : _prodBaseUrl;
 
