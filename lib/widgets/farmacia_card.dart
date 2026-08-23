@@ -19,11 +19,12 @@ class FarmaciaCard extends StatelessWidget {
     final estado = _estadoConfig(farmacia.estadoCuestionario);
 
     return Card(
+      margin: const EdgeInsets.only(bottom: 6),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.lg),
         child: Padding(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           child: Row(
             children: [
               // Info principal
@@ -36,12 +37,12 @@ class FarmaciaCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 3),
+                    const SizedBox(height: 2),
                     // Dirección tocable para navegación
                     GestureDetector(
                       onTap: farmacia.direccion.isNotEmpty
@@ -51,10 +52,10 @@ class FarmaciaCard extends StatelessWidget {
                         farmacia.direccion.isNotEmpty
                             ? '${farmacia.direccion}, ${farmacia.poblacion}'
                             : 'Sin dirección',
-                        maxLines: 2,
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 12,
                           color: farmacia.direccion.isNotEmpty
                               ? AppColors.textSecondary
                               : AppColors.textMuted,
@@ -64,46 +65,46 @@ class FarmaciaCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 3),
+                    const SizedBox(height: 1),
                     Text(
                       farmacia.externalId,
                       style: const TextStyle(
-                        fontSize: 11,
+                        fontSize: 10,
                         color: AppColors.textDisabled,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               // Iconos de acción
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (farmacia.tienePostIt)
                     Container(
-                      width: 32,
-                      height: 32,
-                      margin: const EdgeInsets.only(right: 8),
+                      width: 28,
+                      height: 28,
+                      margin: const EdgeInsets.only(right: 6),
                       decoration: BoxDecoration(
                         color: AppColors.postIt,
                         borderRadius: BorderRadius.circular(AppRadius.sm),
                       ),
                       child: const Icon(
                         Icons.description_outlined,
-                        size: 18,
+                        size: 16,
                         color: Color(0xFFd69e2e),
                       ),
                     ),
                   Container(
-                    width: 36,
-                    height: 36,
+                    width: 30,
+                    height: 30,
                     decoration: BoxDecoration(
                       color: const Color(0xFFfafafa),
                       borderRadius: BorderRadius.circular(AppRadius.md),
                       border: Border.all(color: estado.color, width: 1.5),
                     ),
-                    child: Icon(estado.icon, size: 22, color: estado.color),
+                    child: Icon(estado.icon, size: 18, color: estado.color),
                   ),
                 ],
               ),

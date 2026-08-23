@@ -75,7 +75,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
       child: Column(
         children: [
           // Barra principal
@@ -138,55 +138,61 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
 
           // Panel de filtros avanzados
           if (_showFilters)
-            Container(
-              margin: const EdgeInsets.only(top: 8),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(AppRadius.lg),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Column(
-                children: [
-                  _FilterInput(
-                    label: 'External ID',
-                    value: _filterExternalId,
-                    placeholder: 'EXT-...',
-                    onChanged: (v) => setState(() => _filterExternalId = v),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 300),
+              child: SingleChildScrollView(
+                child: Container(
+                  margin: const EdgeInsets.only(top: 8),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    border: Border.all(color: AppColors.border),
                   ),
-                  const SizedBox(height: 8),
-                  _FilterInput(
-                    label: 'Dirección',
-                    value: _filterDireccion,
-                    placeholder: 'Calle, número...',
-                    onChanged: (v) => setState(() => _filterDireccion = v),
-                  ),
-                  const SizedBox(height: 8),
-                  _FilterInput(
-                    label: 'Población',
-                    value: _filterPoblacion,
-                    placeholder: 'Ciudad...',
-                    onChanged: (v) => setState(() => _filterPoblacion = v),
-                  ),
-                  const SizedBox(height: 8),
-                  _FilterInput(
-                    label: 'Provincia',
-                    value: _filterProvincia,
-                    placeholder: 'Provincia...',
-                    onChanged: (v) => setState(() => _filterProvincia = v),
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _applyFilters,
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 40),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _FilterInput(
+                        label: 'External ID',
+                        value: _filterExternalId,
+                        placeholder: 'EXT-...',
+                        onChanged: (v) => setState(() => _filterExternalId = v),
                       ),
-                      child: const Text('Aplicar filtros'),
-                    ),
+                      const SizedBox(height: 8),
+                      _FilterInput(
+                        label: 'Dirección',
+                        value: _filterDireccion,
+                        placeholder: 'Calle, número...',
+                        onChanged: (v) => setState(() => _filterDireccion = v),
+                      ),
+                      const SizedBox(height: 8),
+                      _FilterInput(
+                        label: 'Población',
+                        value: _filterPoblacion,
+                        placeholder: 'Ciudad...',
+                        onChanged: (v) => setState(() => _filterPoblacion = v),
+                      ),
+                      const SizedBox(height: 8),
+                      _FilterInput(
+                        label: 'Provincia',
+                        value: _filterProvincia,
+                        placeholder: 'Provincia...',
+                        onChanged: (v) => setState(() => _filterProvincia = v),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _applyFilters,
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 40),
+                          ),
+                          child: const Text('Aplicar filtros'),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
         ],

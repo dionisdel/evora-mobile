@@ -68,21 +68,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Column(
       children: [
-        // Header con nombre del usuario
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Hola, ${user?.nombre.split(' ').first ?? 'Instalador'}',
-                style: const TextStyle(fontSize: 14, color: AppColors.textMuted),
-              ),
-              const SyncIndicator(),
-            ],
-          ),
-        ),
-
         // Barra de búsqueda
         SearchBarWidget(onSearch: _buscar),
 
@@ -160,7 +145,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       onRefresh: _onRefresh,
       color: AppColors.accent,
       child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+        padding: const EdgeInsets.fromLTRB(12, 2, 12, 12),
         itemCount: _farmacias.length + 1, // +1 para el footer
         itemBuilder: (context, index) {
           if (index == _farmacias.length) {

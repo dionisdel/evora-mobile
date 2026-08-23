@@ -1,4 +1,5 @@
 import '../core/api_client.dart';
+import '../core/secure_storage.dart';
 import '../models/documento.dart';
 
 /// Servicio de documentos de actividad.
@@ -10,8 +11,9 @@ class ActividadService {
     return data.map((e) => Documento.fromJson(e as Map<String, dynamic>)).toList();
   }
 
-  /// Obtener URL completa de descarga de un documento.
-  static String getDownloadUrl(int documentoId, {String fuente = 'actividad'}) {
-    return '$apiBaseUrl/documentos/download?fuente=$fuente&id=$documentoId';
+  /// Obtener URL completa de descarga de un documento (incluye token para auth).
+  static Future<String> getDownloadUrl(int documentoId, {String fuente = 'actividad'}) async {
+    final token = await SecureStorage.getToken();
+    return '$apiBaseUrl/documentos/download?fuente=$fuente&id=$documentoId&token=$token';
   }
 }

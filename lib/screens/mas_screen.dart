@@ -169,7 +169,7 @@ class _ActividadViewState extends State<_ActividadView> {
 
   Future<void> _handleDownload(Documento doc) async {
     try {
-      final url = ActividadService.getDownloadUrl(doc.id, fuente: doc.fuente);
+      final url = await ActividadService.getDownloadUrl(doc.id, fuente: doc.fuente);
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     } catch (_) {}
   }

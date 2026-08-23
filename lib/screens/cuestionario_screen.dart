@@ -24,6 +24,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
   String? _tipoInstalacion;
   bool _hasChanges = false;
   Timer? _autoSaveTimer;
+  final TextEditingController _observacionesController = TextEditingController();
 
   @override
   void initState() {
@@ -34,6 +35,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
   @override
   void dispose() {
     _autoSaveTimer?.cancel();
+    _observacionesController.dispose();
     super.dispose();
   }
 
@@ -61,6 +63,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
       setState(() {
         _ficha = Map<String, dynamic>.from(response.ficha);
         _tipoInstalacion = response.tipoInstalacion;
+        _observacionesController.text = _ficha!['observaciones'] as String? ?? '';
       });
       _startAutoSave();
     } catch (_) {
@@ -304,8 +307,17 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                       title: 'Datos de la visita',
                       children: [
                         _ReadonlyField(label: 'Farmacia', value: _ficha!['nombre_cliente'] as String?),
-                        _ReadonlyField(label: 'Dirección', value: _ficha!['direccion'] as String?),
-                        _ReadonlyField(label: 'Fecha visita', value: _ficha!['fecha_visita'] as String?),
+                        _ReadonlyField(
+                          label: 'Dirección',
+                          value: [
+                            _ficha!['direccion'] as String? ?? '',
+                            _ficha!['provincia'] as String? ?? '',
+                          ].where((s) => s.isNotEmpty).join(', '),
+                        ),
+                        _ReadonlyField(
+                          label: 'Fecha visita',
+                          value: _ficha!['fecha_visita'] as String? ?? _ficha!['hora_visita'] as String?,
+                        ),
                         _ReadonlyField(label: 'Tipo', value: _tipoInstalacion ?? '-'),
                       ],
                     ),
@@ -348,9 +360,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                       title: 'Observaciones',
                       children: [
                         TextField(
-                          controller: TextEditingController(
-                            text: _ficha!['observaciones'] as String? ?? '',
-                          ),
+                          controller: _observacionesController,
                           onChanged: (v) => _updateField('observaciones', v),
                           maxLines: 4,
                           enabled: !isValidated,
