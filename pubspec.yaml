@@ -37,6 +37,9 @@ dependencies:
   # Maps / URL
   url_launcher: ^6.2.0
 
+  # File system
+  path_provider: ^2.1.0
+
   # Utils
   uuid: ^4.3.0
   intl: ^0.20.3

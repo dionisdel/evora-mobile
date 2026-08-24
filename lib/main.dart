@@ -4,10 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/api_client.dart';
 import 'providers/auth_provider.dart';
 import 'router.dart';
+import 'services/foto_sync_service.dart';
 import 'theme/app_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Iniciar servicio de sincronización de fotos (offline-first)
+  FotoSyncService.instance.init();
 
   // Forzar orientación portrait
   SystemChrome.setPreferredOrientations([
