@@ -3,10 +3,12 @@ import 'package:flutter/foundation.dart';
 import 'secure_storage.dart';
 
 /// URL base según entorno.
-/// TEMPORALMENTE ambos apuntan a testing para generar APK de prueba.
-/// PRODUCCIÓN FINAL: cambiar _prodBaseUrl a https://e-plataforma.com/api/v2/mobile
+/// - Debug (flutter run / debug build) -> DEV remoto
+/// - Release (APK/AAB release) -> PRODUCCIÓN
+/// Nota: kDebugMode es false tanto en release como en profile,
+/// por lo que los builds profile tambien apuntan a producción.
 const String _devBaseUrl = 'https://dev.e-plataforma.com/api/v2/mobile';
-const String _prodBaseUrl = 'https://dev.e-plataforma.com/api/v2/mobile';
+const String _prodBaseUrl = 'https://e-plataforma.com/api/v2/mobile';
 
 String get apiBaseUrl => kDebugMode ? _devBaseUrl : _prodBaseUrl;
 
