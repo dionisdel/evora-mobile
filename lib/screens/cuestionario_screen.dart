@@ -1,10 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../core/api_client.dart';
 import '../core/offline_helpers.dart';
-import '../models/ficha_visita.dart';
 import '../models/sync_item.dart';
 import '../services/cuestionario_service.dart';
 import '../services/foto_sync_service.dart';

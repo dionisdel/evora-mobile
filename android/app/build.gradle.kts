@@ -3,6 +3,7 @@ import java.util.Properties
 
 plugins {
     id("com.android.application")
+    id("org.jetbrains.kotlin.android")
     // The Flutter Gradle Plugin must be applied after the Android plugin.
     id("dev.flutter.flutter-gradle-plugin")
 }
@@ -11,10 +12,6 @@ android {
     namespace = "com.evora.evora_mobile"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "28.2.13676358"
-
-    kotlin {
-        version = "2.4.10"
-    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

@@ -92,7 +92,7 @@ ThemeData buildAppTheme() {
       selectedLabelStyle: TextStyle(fontSize: 12),
       unselectedLabelStyle: TextStyle(fontSize: 12),
     ),
-    cardTheme: CardThemeData(
+    cardTheme: CardTheme(
       color: AppColors.surface,
       elevation: 1,
       shape: RoundedRectangleBorder(

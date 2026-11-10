@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/farmacia.dart';
-import '../providers/auth_provider.dart';
 import '../services/farmacia_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/farmacia_card.dart';
 import '../widgets/search_bar_widget.dart';
-import '../widgets/sync_indicator.dart';
 import 'cuestionario_screen.dart';
 
 /// Pantalla Principal - Búsqueda de Farmacias.
@@ -64,8 +62,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(authProvider).user;
-
     return Column(
       children: [
         // Barra de búsqueda

@@ -189,7 +189,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     onPressed: isDisabled ? null : _handleLogin,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.accent,
-                      disabledBackgroundColor: AppColors.accent.withValues(alpha: 0.6),
+                      disabledBackgroundColor: AppColors.accent.withOpacity(0.6),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(AppRadius.md),
                       ),
